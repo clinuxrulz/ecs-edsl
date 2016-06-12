@@ -1,7 +1,7 @@
 module Main where
 
 import EcsEdsl.Monad.MonadEntitySystem
-import EcsEdsl.EntitySystemEffF
+import EcsEdsl.EntitySystemEff
 import EcsEdsl.Expr
 
 main :: IO ()

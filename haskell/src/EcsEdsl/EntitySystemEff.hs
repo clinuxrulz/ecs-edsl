@@ -1,6 +1,6 @@
 {-# LANGUAGE RankNTypes #-}
 
-module EcsEdsl.EntitySystemEffF where
+module EcsEdsl.EntitySystemEff where
 
 import EcsEdsl.Monad.MonadEntitySystem
 import EcsEdsl.Monad.MonadEntity
@@ -9,7 +9,7 @@ import EcsEdsl.Types
 import Control.Monad.Free
 
 data EntitySystemEffF next
-  = CreateEntity (List Component) (Entity -> next)
+  = CreateEntity (TList Component) (Entity -> next)
   | DestroyEntity Entity next
   | WithEntity (forall r. (forall m a. (MonadEntity m) => WithEntityF m a next -> r) -> r)
 
