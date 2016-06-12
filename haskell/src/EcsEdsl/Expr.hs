@@ -8,6 +8,7 @@ data Expr a where
   LitInt :: Int -> Expr TInt
   LitDouble :: Double -> Expr TDouble
   LitString :: String -> Expr TString
+  Var :: Int -> Expr a
   AddInt :: Expr TInt -> Expr TInt -> Expr TInt
   SubInt :: Expr TInt -> Expr TInt -> Expr TInt
   MultInt :: Expr TInt -> Expr TInt -> Expr TInt
