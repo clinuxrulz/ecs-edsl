@@ -1,6 +1,6 @@
 {-# LANGUAGE GADTs #-}
 
-module EcsEdsl.Language.EntitySystemEffF where
+module EcsEdsl.EntitySystemEffF where
 
 import EcsEdsl.Types
 
