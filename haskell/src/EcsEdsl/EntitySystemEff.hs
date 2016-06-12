@@ -1,9 +1,10 @@
-{-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE RankNTypes, DeriveFunctor, ScopedTypeVariables #-}
 
 module EcsEdsl.EntitySystemEff where
 
 import EcsEdsl.Monad.MonadEntitySystem
 import EcsEdsl.Monad.MonadEntity
+import EcsEdsl.EntityEff
 import EcsEdsl.Types
 
 import Control.Monad.Free
@@ -11,21 +12,8 @@ import Control.Monad.Free
 data EntitySystemEffF next
   = CreateEntity (TList Component) (Entity -> next)
   | DestroyEntity Entity next
-  | WithEntity (forall r. (forall m a. (MonadEntity m) => WithEntityF m a next -> r) -> r)
-
-data WithEntityF m a next = WithEntityF Entity (m a) (a -> next)
-
-instance Functor (EntitySystemEffF) where
-  fmap f (CreateEntity cs k) = CreateEntity cs (f . k)
-  fmap f (DestroyEntity e n) = DestroyEntity e (f n)
-  fmap f (WithEntity c) =
-    c (\x ->
-      case x of
-        WithEntityF e ma k -> WithEntity (\k2 -> k2 $ WithEntityF e ma (f . k))
-    )
-
-instance Functor (WithEntityF m a) where
-  fmap f (WithEntityF e ma k) = WithEntityF e ma (f . k)
+  | WithEntity Entity (EntityEff next)
+  deriving Functor
 
 newtype EntitySystemEff a = EntitySystemEff (Free EntitySystemEffF a)
 
@@ -45,4 +33,4 @@ instance Monad EntitySystemEff where
 instance MonadEntitySystem EntitySystemEff where
   createEntity cs = EntitySystemEff $ liftF $ CreateEntity cs id
   destroyEntity e = EntitySystemEff $ liftF $ DestroyEntity e ()
-  withEntity e m = EntitySystemEff $ liftF $ WithEntity (\k -> k $ WithEntityF e m id)
+  withEntity e m = EntitySystemEff $ liftF $ WithEntity e m
