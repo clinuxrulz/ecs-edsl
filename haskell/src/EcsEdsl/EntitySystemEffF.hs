@@ -1,4 +1,4 @@
-{-# LANGUAGE GADTs, RankNTypes, DeriveFunctor #-}
+{-# LANGUAGE RankNTypes, DeriveFunctor #-}
 
 module EcsEdsl.EntitySystemEffF where
 
