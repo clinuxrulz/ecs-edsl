@@ -3,10 +3,13 @@
 module EcsEdsl.Declaration where
 
 import EcsEdsl.Expr
+import EcsEdsl.Stmt
+import EcsEdsl.Types
 
 data Declaration
   = DeclComponentType ComponentTypeDecl
   | DeclEntity EntityDecl
+  | DeclSystem SystemDecl
 
 data EntityDecl
   = EntityDecl
@@ -24,18 +27,18 @@ data ComponentDecl
 
 data ParamDecl
   = ParamDecl
-      String        -- ^ Name
+      String        -- ^ Parameter Name
       (forall r.
         (forall t.
-          Expr t    -- ^ Value
+          Expr t    -- ^ Parameter Value
           -> r
         ) -> r
       )
 
 data ParamTypeDecl
   = ParamTypeDecl
-      String    -- ^ Name
-      TypeDecl  -- ^ Type
+      String    -- ^ Parameter Name
+      TypeDecl  -- ^ Parameter Type
 
 data TypeDecl
   = TDInt
@@ -43,3 +46,13 @@ data TypeDecl
   | TDString
   | TDMaybe TypeDecl
   | TDArray TypeDecl
+
+data SystemDecl
+  = SystemDecl
+      String                               -- ^ System Name
+      [ComponentTypeDecl]                  -- ^ Listens to Component Types
+      (Stmt ())                            -- ^ On Tick Handler
+      (Entity -> Stmt ())                  -- ^ Entity Added Handler
+      (Entity -> Stmt ())                  -- ^ Entity Removed Handler
+      (Entity -> Component -> Stmt ())     -- ^ Component Set Handler
+      (Entity -> ComponentType -> Stmt ()) -- ^ Component Unset Handler
