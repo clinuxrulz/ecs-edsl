@@ -1,9 +1,26 @@
+{-# LANGUAGE RankNTypes #-}
+
 module EcsEdsl.Declaration where
 
 data Declaration
-  = DeclComponent ComponentDecl
+  = DeclComponentType ComponentTypeDecl
   | DeclEntity EntityDecl
 
-data ComponentDecl
+data ComponentTypeDecl
+  = ComponentTypeDecl
+      String      -- ^ Component Type Name
+      [ParamDecl] -- ^ Parameters
 
 data EntityDecl
+
+data ParamDecl
+  = ParamDecl
+      String    -- ^ Name
+      TypeDecl  -- ^ Type
+
+data TypeDecl
+  = TDInt
+  | TDDouble
+  | TDString
+  | TDMaybe TypeDecl
+  | TDArray TypeDecl
