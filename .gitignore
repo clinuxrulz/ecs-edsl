@@ -1,3 +1,5 @@
 /haskell/library/.cabal-sandbox/
 /haskell/library/cabal.sandbox.config
 /haskell/library/dist/
+/haskell/test/cabal.sandbox.config
+/haskell/test/dist/
