@@ -7,6 +7,6 @@ import EcsEdsl.EntityEff
 import EcsEdsl.Types
 
 class Monad m => MonadEntitySystem m where
-  createEntity :: TList Component -> m Entity
+  createEntity :: m Entity
   destroyEntity :: Entity -> m ()
   withEntity :: forall a. Entity -> EntityEff a -> m a

@@ -10,7 +10,7 @@ import EcsEdsl.Types
 import Control.Monad.Free
 
 data EntitySystemEffF next
-  = CreateEntity (TList Component) (Entity -> next)
+  = CreateEntity (Entity -> next)
   | DestroyEntity Entity next
   | WithEntity Entity (EntityEff next)
   deriving Functor
@@ -31,6 +31,6 @@ instance Monad EntitySystemEff where
   (EntitySystemEff m) >>= f = EntitySystemEff $ m >>= (unEntitySystemEff . f)
 
 instance MonadEntitySystem EntitySystemEff where
-  createEntity cs = EntitySystemEff $ liftF $ CreateEntity cs id
+  createEntity = EntitySystemEff $ liftF $ CreateEntity id
   destroyEntity e = EntitySystemEff $ liftF $ DestroyEntity e ()
   withEntity e m = EntitySystemEff $ liftF $ WithEntity e m

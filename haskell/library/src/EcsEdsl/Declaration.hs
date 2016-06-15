@@ -44,13 +44,15 @@ data TypeDecl
   = TDInt
   | TDDouble
   | TDString
+  | TDVec2
+  | TDComplex
   | TDMaybe TypeDecl
   | TDArray TypeDecl
 
 data SystemDecl
   = SystemDecl
       String                               -- ^ System Name
-      [ComponentTypeDecl]                  -- ^ Listens to Component Types
+      [String]                             -- ^ Listens to Component Types
       (Stmt ())                            -- ^ On Tick Handler
       (Entity -> Stmt ())                  -- ^ Entity Added Handler
       (Entity -> Stmt ())                  -- ^ Entity Removed Handler
