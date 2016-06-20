@@ -1,11 +1,14 @@
-{-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE RankNTypes, FlexibleContexts #-}
 
 module EcsEdsl.CodeGen.C where
 
 import EcsEdsl.Program
+import qualified EcsEdsl.Program as Program
+import EcsEdsl.CompileError
 import EcsEdsl.Declaration
 import Control.Monad.Reader
 import Control.Monad.State
+import Control.Monad.Error.Class
 import Data.Foldable (traverse_)
 import qualified Data.Map.Strict as M
 
@@ -62,14 +65,29 @@ freshVarId = do
   CodeGenT $ modify $ stateSetFreshId freshId'
   return freshId
 
-compileToC :: forall m. (Monad m) => Program -> m [String]
+compileToC :: forall m. (MonadError CompileError m) => Program -> m [String]
 compileToC program = do
   lines <- evalStateT (runReaderT (unCodeGenT $ compile >> (CodeGenT $ gets stateGetLines)) program) stateInit
   return $ reverse lines
 
-compile :: forall m. (Monad m) => CodeGenT m ()
+compile :: forall m. (MonadError CompileError m) => CodeGenT m ()
 compile = do
   writeComponentTypeStructs
 
-writeComponentTypeStructs :: forall m. (Monad m) => CodeGenT m ()
-writeComponentTypeStructs = return ()
+writeComponentTypeStructs :: forall m. (MonadError CompileError m) => CodeGenT m ()
+writeComponentTypeStructs = do
+  (CodeGenT $ asks Program.getComponentTypeDecls) >>= traverse_ writeComponentTypeStruct
+
+writeComponentTypeStruct :: forall m. (MonadError CompileError m) => ComponentTypeDecl -> CodeGenT m ()
+writeComponentTypeStruct (ComponentTypeDecl typeName paramTypes) = do
+  addLine $ "struct " ++ typeName ++ " {"
+  traverse_ writeParamType paramTypes
+  addLine "};"
+
+writeParamType :: forall m. (MonadError CompileError m) => ParamTypeDecl -> CodeGenT m ()
+writeParamType (ParamTypeDecl n t) = do
+  case t of
+    TDInt -> addLine $ "int " ++ n ++ ";"
+    TDDouble -> addLine $ "float " ++ n ++ ";"
+    TDString -> addLine $ "std::string " ++ n ++ ";"
+    _ -> CodeGenT $ throwError $ TypeNotSupportedYet t

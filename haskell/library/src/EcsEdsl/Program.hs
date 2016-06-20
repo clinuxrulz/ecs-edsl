@@ -7,3 +7,6 @@ data Program
       [ComponentTypeDecl]
       [SystemDecl]
       [EntityDecl]
+
+getComponentTypeDecls :: Program -> [ComponentTypeDecl]
+getComponentTypeDecls (Program a _ _) = a
