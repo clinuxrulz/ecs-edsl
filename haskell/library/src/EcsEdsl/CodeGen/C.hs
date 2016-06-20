@@ -91,4 +91,6 @@ writeParamType (ParamTypeDecl n t) = do
     TDInt -> addLine $ "int " ++ n ++ ";"
     TDDouble -> addLine $ "float " ++ n ++ ";"
     TDString -> addLine $ "std::string " ++ n ++ ";"
+    TDVec2 -> addLine $ "vec2 " ++ n ++ ";"
+    TDComplex -> addLine $ "complex " ++ n ++ ";"
     _ -> CodeGenT $ throwError $ TypeNotSupportedYet t
