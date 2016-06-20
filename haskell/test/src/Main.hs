@@ -2,6 +2,10 @@ module Main where
 
 import EcsEdsl.Program
 import EcsEdsl.Declaration
+import EcsEdsl.CompileError
+import EcsEdsl.CodeGen.C
+
+import Data.Foldable (traverse_)
 
 program =
   Program
@@ -27,4 +31,13 @@ program =
     -- Initial Entities
     []
 
-main = putStrLn "Test goes here."
+main = do
+  either
+    (\err ->
+      putStrLn $ "Error: " ++
+        (case err of
+          TypeNotSupportedYet t -> "Type not supported yet."
+        )
+    )
+    (traverse_ putStrLn)
+    (compileToC program)

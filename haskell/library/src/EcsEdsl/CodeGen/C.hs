@@ -6,6 +6,7 @@ import EcsEdsl.Program
 import qualified EcsEdsl.Program as Program
 import EcsEdsl.CompileError
 import EcsEdsl.Declaration
+
 import Control.Monad.Reader
 import Control.Monad.State
 import Control.Monad.Error.Class
