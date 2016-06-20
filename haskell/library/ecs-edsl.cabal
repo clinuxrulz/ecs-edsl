@@ -17,7 +17,8 @@ build-type:          Simple
 cabal-version:       >=1.10
 
 library
-  exposed-modules:   EcsEdsl.Monad.MonadEntity,
+  exposed-modules:   EcsEdsl.CodeGen.C,
+                     EcsEdsl.Monad.MonadEntity,
                      EcsEdsl.Monad.MonadEntitySystem,
                      EcsEdsl.Declaration,
                      EcsEdsl.EntityEff,
@@ -28,6 +29,8 @@ library
                      EcsEdsl.Types
   other-modules:
   build-depends:     base >=4.8 && <4.9,
-                     free >=4.12.4
+                     free >=4.12.4,
+                     mtl >=2.2.1,
+                     containers >=0.5.7.1
   hs-source-dirs:    src
   default-language:  Haskell2010
