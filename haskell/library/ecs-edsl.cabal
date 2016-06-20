@@ -20,6 +20,7 @@ library
   exposed-modules:   EcsEdsl.CodeGen.C,
                      EcsEdsl.Monad.MonadEntity,
                      EcsEdsl.Monad.MonadEntitySystem,
+                     EcsEdsl.CompileError,
                      EcsEdsl.Declaration,
                      EcsEdsl.EntityEff,
                      EcsEdsl.EntitySystemEff,
