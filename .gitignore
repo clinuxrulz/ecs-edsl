@@ -3,3 +3,5 @@
 /haskell/library/dist/
 /haskell/test/cabal.sandbox.config
 /haskell/test/dist/
+/.idea/workspace.xml
+/.idea/tasks.xml
