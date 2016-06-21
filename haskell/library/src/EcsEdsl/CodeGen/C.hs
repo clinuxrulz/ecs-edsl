@@ -10,7 +10,8 @@ import EcsEdsl.Declaration
 import Control.Monad.Reader
 import Control.Monad.State
 import Control.Monad.Error.Class
-import Data.Foldable (traverse_)
+import Data.Foldable (sequence_, traverse_)
+import Data.List (intersperse)
 import qualified Data.Map.Strict as M
 
 data CodeGenState =
@@ -98,11 +99,27 @@ compileToC program = do
 
 compile :: forall m. (MonadError CompileError m) => CodeGenT m ()
 compile = do
+  writePrelude
+  addLine ""
   writeComponentTypeStructs
+
+writePrelude :: forall m. (Monad m) => CodeGenT m ()
+writePrelude = do
+  addLines
+    [
+      "struct vec2 {",
+      "  float x, y;",
+      "};",
+      "",
+      "struct complex {",
+      "  float real, imag;",
+      "};"
+    ]
 
 writeComponentTypeStructs :: forall m. (MonadError CompileError m) => CodeGenT m ()
 writeComponentTypeStructs = do
-  (CodeGenT $ asks Program.getComponentTypeDecls) >>= traverse_ writeComponentTypeStruct
+  types <- (CodeGenT $ asks Program.getComponentTypeDecls)
+  (sequence_ $ intersperse (addLine "") (writeComponentTypeStruct <$> types))
 
 writeComponentTypeStruct :: forall m. (MonadError CompileError m) => ComponentTypeDecl -> CodeGenT m ()
 writeComponentTypeStruct (ComponentTypeDecl typeName paramTypes) = do
