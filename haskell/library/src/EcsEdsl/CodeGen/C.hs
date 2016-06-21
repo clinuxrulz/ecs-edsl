@@ -17,6 +17,7 @@ data CodeGenState =
   CodeGenState
     Int                              -- ^ Fresh variable id
     [String]                         -- ^ Current lines of code (backwards)
+    Int                              -- ^ Indent level
     (M.Map String ComponentTypeDecl) -- ^ Avaliable Component Types
 
 stateInit :: CodeGenState
@@ -24,6 +25,7 @@ stateInit =
   CodeGenState
     0
     []
+    0
     M.empty
 
 newtype CodeGenT m a = CodeGenT (ReaderT Program (StateT CodeGenState m) a)
@@ -42,19 +44,42 @@ instance (Monad m) => Monad (CodeGenT m) where
   (CodeGenT m) >>= f = CodeGenT $ m >>= (unCodeGenT . f)
 
 stateGetFreshId :: CodeGenState -> Int
-stateGetFreshId (CodeGenState freshId _ _) = freshId
+stateGetFreshId (CodeGenState freshId _ _ _) = freshId
 
 stateSetFreshId :: Int -> CodeGenState -> CodeGenState
-stateSetFreshId freshId (CodeGenState _ lines componentTypes) = CodeGenState freshId lines componentTypes
+stateSetFreshId freshId (CodeGenState _ lines indent componentTypes) = CodeGenState freshId lines indent componentTypes
 
 stateGetLines :: CodeGenState -> [String]
-stateGetLines (CodeGenState _ lines _) = lines
+stateGetLines (CodeGenState _ lines _ _) = lines
 
 stateModLines :: ([String] -> [String]) -> CodeGenState -> CodeGenState
-stateModLines f (CodeGenState freshId lines componentTypes) = CodeGenState freshId (f lines) componentTypes
+stateModLines f (CodeGenState freshId lines indent componentTypes) = CodeGenState freshId (f lines) indent componentTypes
+
+stateGetIndent :: CodeGenState -> Int
+stateGetIndent (CodeGenState _ _ indent _) = indent
+
+stateModIndent :: (Int -> Int) -> CodeGenState -> CodeGenState
+stateModIndent f (CodeGenState freshId lines indent componentTypes) = CodeGenState freshId lines (f indent) componentTypes
+
+getIndentStr :: forall m. (Monad m) => CodeGenT m String
+getIndentStr = do
+  indent <- CodeGenT $ gets stateGetIndent
+  return $ indentStr indent
+  where
+    indentStr 0 = ""
+    indentStr n = "  " ++ indentStr (n - 1)
+
+indentBlock :: forall m a. (Monad m) => CodeGenT m a -> CodeGenT m a
+indentBlock block = do
+  CodeGenT $ modify $ stateModIndent (\x -> x + 1)
+  r <- block
+  CodeGenT $ modify $ stateModIndent (\x -> x - 1)
+  return r
 
 addLine :: forall m. (Monad m) => String -> CodeGenT m ()
-addLine line = CodeGenT $ modify $ stateModLines (line :)
+addLine line = do
+  indentStr <- getIndentStr
+  CodeGenT $ modify $ stateModLines ((indentStr ++ line) :)
 
 addLines :: forall m f. (Monad m, Foldable f) => f String -> CodeGenT m ()
 addLines lines = traverse_ addLine lines
@@ -82,7 +107,8 @@ writeComponentTypeStructs = do
 writeComponentTypeStruct :: forall m. (MonadError CompileError m) => ComponentTypeDecl -> CodeGenT m ()
 writeComponentTypeStruct (ComponentTypeDecl typeName paramTypes) = do
   addLine $ "struct " ++ typeName ++ " {"
-  traverse_ writeParamType paramTypes
+  indentBlock
+    (traverse_ writeParamType paramTypes)
   addLine "};"
 
 writeParamType :: forall m. (MonadError CompileError m) => ParamTypeDecl -> CodeGenT m ()
