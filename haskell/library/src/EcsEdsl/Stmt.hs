@@ -16,6 +16,9 @@ newtype Stmt a = Stmt (Free StmtF a)
 unStmt :: forall a. Stmt a -> Free StmtF a
 unStmt (Stmt a) = a
 
+--instance Functor StmtF where
+--  fmap (Eval c) f = Eval (\k -> c (\k' -> ))
+
 {- TODO: Define Functor instance for StmtF
 instance Functor Stmt where
   fmap f (Stmt m) = Stmt $ fmap f m

@@ -33,4 +33,4 @@ instance Monad EntitySystemEff where
 instance MonadEntitySystem EntitySystemEff where
   createEntity = EntitySystemEff $ liftF $ CreateEntity id
   destroyEntity e = EntitySystemEff $ liftF $ DestroyEntity e ()
-  withEntity e k = EntitySystemEff $ liftF $ WithEntity e (k id)
+  withEntity e m = EntitySystemEff $ liftF $ WithEntity e m
