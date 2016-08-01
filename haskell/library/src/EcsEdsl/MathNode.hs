@@ -1,15 +1,18 @@
 module EcsEdsl.MathNode where
 
+import EcsEdsl.NodeId
+
 data MathNode
-  = Not Int
-  | And Int Int
-  | Or Int Int
-  | AddInt Int Int
-  | SubInt Int Int
-  | MultInt Int Int
-  | DivInt Int Int
-  | ModInt Int Int
-  | AddDouble Int Int
-  | SubDouble Int Int
-  | MultDouble Int Int
-  | DivDouble Int Int
+  = Not NodeId
+  | And NodeId NodeId
+  | Or NodeId NodeId
+  | AddNodeId NodeId NodeId
+  | SubNodeId NodeId NodeId
+  | MultNodeId NodeId NodeId
+  | DivNodeId NodeId NodeId
+  | ModNodeId NodeId NodeId
+  | AddDouble NodeId NodeId
+  | SubDouble NodeId NodeId
+  | MultDouble NodeId NodeId
+  | DivDouble NodeId NodeId
+  deriving (Eq, Ord)

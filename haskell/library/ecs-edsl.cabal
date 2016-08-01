@@ -28,6 +28,8 @@ library
                      EcsEdsl.Expr,
                      EcsEdsl.ExprNode,
                      EcsEdsl.MathNode,
+                     EcsEdsl.NodeId,
+                     EcsEdsl.NodeM,
                      EcsEdsl.Program,
                      EcsEdsl.Stmt,
                      EcsEdsl.Types

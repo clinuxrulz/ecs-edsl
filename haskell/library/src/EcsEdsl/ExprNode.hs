@@ -7,5 +7,6 @@ data ExprNode
   | LitInt Int
   | LitDouble Double
   | LitString String
-  | Var Int
+  | Var String
   | Math MathNode
+  deriving (Eq, Ord)
